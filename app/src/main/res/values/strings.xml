@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">InventoryApp</string>
+        <string name="action_delete_all_entries">Delete All Items</string>->
+        <string name="editor_activity_title_new_item">Add an Item</string>
+        <string name="action_save">Save</string>
+        <string name="action_delete">Delete</string>
+        <string name="category_overview">Overview</string>
+        <string name="hint_item_name">Name</string>
+        <string name="hint_item_price">Price</string>
+        <string name="hint_item_quantity">Quantity</string>
+        <string name="item_saved">Item saved sucessfully</string>
+        <string name="error_saving">Error with saving item</string>
+        <string name="add_item">Add an item</string>
+        <string name="edit_pet">Edit an item</string>
+        <string name="dialog">Discard your changes and quit editing?</string>
+        <string name="discard">discard</string>
+        <string name="edit">keep editing</string>
+        <string name="editor_delete_item_successful">Pet deleted</string>
+        <string name="editor_delete_item_failed">Error with deleting pet</string>
+        <string name="delete_dialog_msg">Delete this pet?</string>
+        <string name="delete">Delete</string>
+        <string name="cancel">Cancel</string>
+
+
 </resources>

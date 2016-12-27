@@ -16,9 +16,7 @@ public class InventoryDbHelper extends SQLiteOpenHelper{
                     InventoryContract.InventoryEntry._ID + " INTEGER PRIMARY KEY," +
                     InventoryContract.InventoryEntry.COLUMN_ITEM_NAME + TEXT_TYPE + " NOT NULL," +
                     InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE + INT_TYPE + " NOT NULL," +
-                    InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY + INT_TYPE + " DEFAULT 0," +
-                    InventoryContract.InventoryEntry.COLUMN_ITEM_IMAGE + INT_TYPE + COMMA_SEP +
-                    InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION + TEXT_TYPE + " NOT NULL)";
+                    InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY + INT_TYPE + " DEFAULT 0)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + InventoryContract.InventoryEntry.TABLE_NAME;
