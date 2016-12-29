@@ -27,7 +27,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif-medium"
             android:paddingTop="16dp"
-            android:text="There are no items to show..."
+            android:text="@string/no_items"
             android:textAppearance="?android:textAppearanceMedium" />
 
         <TextView
@@ -38,7 +38,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif"
             android:paddingTop="8dp"
-            android:text="Add items by clicking on button below!"
+            android:text="@string/add_items"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="#A2AAB0" />
     </RelativeLayout>
@@ -47,8 +47,7 @@
         android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="55dp" />
+        android:layout_alignParentTop="true" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

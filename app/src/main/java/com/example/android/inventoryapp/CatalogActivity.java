@@ -47,11 +47,11 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         itemsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent intent = new Intent(CatalogActivity.this, DetailsActivity.class);
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
                 intent.setData(ContentUris.withAppendedId(InventoryContract.InventoryEntry.CONTENT_URI, id));
                 startActivity(intent);
-            }
-        });
+        }
+    });
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -81,11 +81,10 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.delete_dialog_msg);
+        builder.setMessage(R.string.delete_all_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
-                deletePets();
+                deleteItems();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -103,10 +102,11 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         alertDialog.show();
     }
 
-    private void deletePets() {
+    private void deleteItems() {
         int rowsDeleted = getContentResolver().delete(InventoryContract.InventoryEntry.CONTENT_URI, null, null);
         Log.v("CatalogActivity", rowsDeleted + " rows deleted from inventory database");
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -121,6 +121,11 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 InventoryContract.InventoryEntry.COLUMN_ITEM_NAME,
                 InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE,
                 InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY,
+                InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION,
+                InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD,
+                InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER,
+                InventoryContract.InventoryEntry.COLUMN_ITEM_IMAGE,
+
         };
 
         // Now create and return a CursorLoader that will take care of

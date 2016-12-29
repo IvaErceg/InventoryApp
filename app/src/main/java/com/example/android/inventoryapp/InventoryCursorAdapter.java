@@ -1,18 +1,21 @@
 package com.example.android.inventoryapp;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract;
 
-/**
- * Created by Iva on 27.12.2016..
- */
 
 public class InventoryCursorAdapter extends CursorAdapter {
     /**
@@ -49,19 +52,50 @@ public class InventoryCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
         // Find fields to populate in inflated template
         TextView nameView = (TextView) view.findViewById(R.id.name);
         TextView priceView = (TextView) view.findViewById(R.id.price);
         TextView quantityView = (TextView) view.findViewById(R.id.quantity);
+        TextView soldView = (TextView) view.findViewById(R.id.sold);
+        Button sell = (Button) view.findViewById(R.id.sell_button);
         // Extract properties from cursor
+        int id = cursor.getInt(cursor.getColumnIndex(InventoryContract.InventoryEntry._ID));
+        final Uri currentItemUri = ContentUris.withAppendedId(InventoryContract.InventoryEntry.CONTENT_URI, id);
         String name = cursor.getString(cursor.getColumnIndexOrThrow(InventoryContract.InventoryEntry.COLUMN_ITEM_NAME));
-        Integer price = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE));
-        Integer quantity = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY));
-        // Populate fields with extracted properties
+        float price = cursor.getFloat(cursor.getColumnIndexOrThrow(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE));
+        String productPrice = context.getString(R.string.dollar_sign) + price + context.getString(R.string.per_item);
+        final int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY));
+        final int sold = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD));
+
+        String quantityInStock = quantity + context.getString(R.string.in_stock);
+        String itemsSold = context.getString(R.string.sold) + sold;
+
         nameView.setText(name);
-        quantityView.setText(String.valueOf(quantity));
-        priceView.setText(String.valueOf(price));
+        quantityView.setText(quantityInStock);
+        priceView.setText(productPrice);
+        soldView.setText(itemsSold);
+        sell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ContentValues values = new ContentValues();
+                ContentResolver r = view.getContext().getContentResolver();
+                if (quantity > 0) {
+                    int newQuantity = quantity;
+                    int soldItems = sold;
+                    values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY, --newQuantity);
+                    values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD, ++soldItems);
+                    r.update(
+                            currentItemUri,
+                            values,
+                            null,
+                            null
+                    );
+                    context.getContentResolver().notifyChange(currentItemUri, null);
+                } else {
+                    Toast.makeText(context, R.string.out_of_stock, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
-
