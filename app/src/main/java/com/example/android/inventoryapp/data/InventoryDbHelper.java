@@ -15,13 +15,13 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + InventoryContract.InventoryEntry.TABLE_NAME + " ("
                     + InventoryContract.InventoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + InventoryContract.InventoryEntry.COLUMN_ITEM_NAME + " TEXT NOT NULL, "
-                    + InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
-                    + InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE + " REAL NOT NULL DEFAULT 0.0, "
-                    + InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION + " TEXT NOT NULL, "
-                    + InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER + " TEXT NOT NULL, "
-                    + InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD + " INTEGER NOT NULL DEFAULT 0, "
-                    + InventoryContract.InventoryEntry.COLUMN_ITEM_IMAGE + " TEXT NOT NULL"
+                    + InventoryContract.InventoryEntry.COLUMN_ITEM_NAME + TEXT_TYPE + " NOT NULL, "
+                    + InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY + INT_TYPE + " NOT NULL DEFAULT 0, "
+                    + InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE + REAL_TYPE + " NOT NULL DEFAULT 0.0, "
+                    + InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION + TEXT_TYPE + " NOT NULL, "
+                    + InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER + TEXT_TYPE + " NOT NULL, "
+                    + InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD + INT_TYPE + " NOT NULL DEFAULT 0, "
+                    + InventoryContract.InventoryEntry.COLUMN_ITEM_IMAGE + TEXT_TYPE + " NOT NULL"
                     + ");";
 
     private static final String SQL_DELETE_ENTRIES =

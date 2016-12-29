@@ -33,7 +33,7 @@
                     android:layout_height="100dp"
                     android:contentDescription="@string/item_image"
                     android:padding="8dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/ic_file_image" />
             </LinearLayout>
             <!-- Input fields -->
             <LinearLayout

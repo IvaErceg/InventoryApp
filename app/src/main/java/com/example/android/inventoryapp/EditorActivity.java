@@ -197,10 +197,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
                 if (ActivityCompat.shouldShowRequestPermissionRationale(EditorActivity.this,
                         Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                } else {
+                    Toast.makeText(EditorActivity.this, "Need permission to use pictures from Gallery!", Toast.LENGTH_SHORT).show();
+                }
+                else {
                     ActivityCompat.requestPermissions(EditorActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE);
+                            pickImage();
                 }
             } else {
                 pickImage();
@@ -236,7 +239,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 mImageUri = image.toString();
                 Picasso.with(this)
                         .load(mImageUri)
-                        .placeholder(R.mipmap.ic_launcher)
+                        .placeholder(R.drawable.ic_file_image)
                         .into(mImageView);
             }
         }
