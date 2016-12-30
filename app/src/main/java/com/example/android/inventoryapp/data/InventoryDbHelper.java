@@ -10,7 +10,6 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
     private static final String INT_TYPE = " INTEGER";
     private static final String REAL_TYPE = " REAL";
-    private static final String COMMA_SEP = ",";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + InventoryContract.InventoryEntry.TABLE_NAME + " ("
@@ -21,7 +20,7 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                     + InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION + TEXT_TYPE + " NOT NULL, "
                     + InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER + TEXT_TYPE + " NOT NULL, "
                     + InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD + INT_TYPE + " NOT NULL DEFAULT 0, "
-                    + InventoryContract.InventoryEntry.COLUMN_ITEM_IMAGE + TEXT_TYPE + " NOT NULL"
+                    + InventoryContract.InventoryEntry.COLUMN_ITEM_IMAGE + TEXT_TYPE + " NOT NULL DEFAULT 'No image'"
                     + ");";
 
     private static final String SQL_DELETE_ENTRIES =

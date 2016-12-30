@@ -10,6 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
+
+import static com.example.android.inventoryapp.data.InventoryContract.InventoryEntry.isEmailValid;
 
 public class InventoryProvider extends ContentProvider {
     /**
@@ -128,9 +131,9 @@ public class InventoryProvider extends ContentProvider {
 
     public Uri saveItem(Uri uri, ContentValues values) {
 
-        // Check that the name is not null
+        // Check that the name is not null or empty
         String name = values.getAsString(InventoryContract.InventoryEntry.COLUMN_ITEM_NAME);
-        if (name == null) {
+        if (name == null || name.equals("")) {
             throw new IllegalArgumentException("Item requires a name");
         }
 
@@ -140,8 +143,21 @@ public class InventoryProvider extends ContentProvider {
         }
 
         Float price = values.getAsFloat(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE);
-        if (price == null || price < 0) {
+        if (price == null || price < 0.0) {
             throw new IllegalArgumentException("Item requires valid price");
+        }
+
+        String description = values.getAsString(InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION);
+        if (description == null || description.equals("")) {
+            throw new IllegalArgumentException("Item requires valid description");
+        }
+
+        String supplier = values.getAsString(InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER);
+        if (supplier == null || supplier.equals("")) {
+            throw new IllegalArgumentException("Item requires a supplier");
+        }
+        if (!isEmailValid(supplier)) {
+            Toast.makeText(getContext(), "Please provide valid email", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -199,7 +215,7 @@ public class InventoryProvider extends ContentProvider {
                 return updateItem(uri, contentValues, selection, selectionArgs);
             case ITEM_ID:
                 selection = InventoryContract.InventoryEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateItem(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
@@ -209,33 +225,40 @@ public class InventoryProvider extends ContentProvider {
     private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_ITEM_NAME)) {
             String name = values.getAsString(InventoryContract.InventoryEntry.COLUMN_ITEM_NAME);
-            if (name == null) {
-                throw new IllegalArgumentException("Item requires a name");
+            if (name == null || name.equals("")) {
+                throw new IllegalArgumentException("Product requires a name");
             }
         }
 
-        if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE)) {
-            Float price = values.getAsFloat(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE);
-            if (price == null|| price < 0) {
-                throw new IllegalArgumentException("Item requires valid gender");
-            }
-        }
-
+        // Check that the count is non-negative
         if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY)) {
-            // Check that the weight is greater than or equal to 0 kg
             Integer quantity = values.getAsInteger(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY);
             if (quantity == null || quantity < 0) {
                 throw new IllegalArgumentException("Item requires valid quantity");
             }
         }
+
+        // Check that the price is non-negative
+        if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE)) {
+            Float price = values.getAsFloat(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE);
+            if (price == null || price < 0.00) {
+                throw new IllegalArgumentException("Item requires valid price");
+            }
+        }
         if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION)) {
-            // Check that the weight is greater than or equal to 0 kg
             String description = values.getAsString(InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION);
-            if (description == null) {
+            if (description == null || description.equals("")) {
                 throw new IllegalArgumentException("Item requires valid description");
             }
         }
+        if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER)) {
+            String supplier = values.getAsString(InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER);
+            if (supplier == null || supplier.equals("")) {
+                throw new IllegalArgumentException("Item requires a supplier");
+            }
+        }
 
+        // If there are no values to update, then don't try to update the database
         if (values.size() == 0) {
             return 0;
         }
@@ -255,4 +278,6 @@ public class InventoryProvider extends ContentProvider {
         // Return the number of rows updated
         return rowsUpdated;
     }
+
+
 }

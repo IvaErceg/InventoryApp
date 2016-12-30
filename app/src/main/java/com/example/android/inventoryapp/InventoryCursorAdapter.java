@@ -1,6 +1,5 @@
 package com.example.android.inventoryapp;
 
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -75,17 +74,17 @@ public class InventoryCursorAdapter extends CursorAdapter {
         quantityView.setText(quantityInStock);
         priceView.setText(productPrice);
         soldView.setText(itemsSold);
+        //update quantity and sold on button click
         sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ContentValues values = new ContentValues();
-                ContentResolver r = view.getContext().getContentResolver();
                 if (quantity > 0) {
-                    int newQuantity = quantity;
-                    int soldItems = sold;
-                    values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY, --newQuantity);
-                    values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD, ++soldItems);
-                    r.update(
+                    int newQuantity = quantity - 1;
+                    int soldItems = sold + 1;
+                    values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY, newQuantity);
+                    values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD, soldItems);
+                    view.getContext().getContentResolver().update(
                             currentItemUri,
                             values,
                             null,

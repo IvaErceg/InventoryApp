@@ -34,11 +34,12 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
+import static com.example.android.inventoryapp.data.InventoryContract.InventoryEntry.isEmailValid;
+
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    public static final int PICK_PHOTO_REQUEST = 10;
     public static final int EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 1;
-
+    static final int REQUEST_IMAGE_GET = 1;
     private EditText mNameEditText;
 
     private EditText mPriceEditText;
@@ -66,7 +67,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private Uri mCurrentItemUri;
 
-    private String mImageUri = "no images";
+    private String mImageUri = "no image set";
 
     private boolean mItemHasChanged = false;
 
@@ -90,7 +91,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mImageView = (ImageView) findViewById(R.id.item_image);
         mSoldEditText = (EditText) findViewById(R.id.edit_item_sold);
         mSupplierEditText = (EditText) findViewById(R.id.edit_item_supplier);
-
         orderButton = (Button) findViewById(R.id.order_button);
         sellButton = (Button) findViewById(R.id.sell_button);
         receivedButton = (Button) findViewById(R.id.recieved_button);
@@ -115,7 +115,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             setTitle(getString(R.string.edit_item));
             getLoaderManager().initLoader(0, null, this);
         }
-
+        //add click listeners on buttons
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,6 +136,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 sell();
             }
         });
+
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,6 +146,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
+    //menu setup
     private void showUnsavedChangesDialog(
             DialogInterface.OnClickListener discardButtonClickListener) {
         // Create an AlertDialog.Builder and set the message, and click listeners
@@ -198,12 +200,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 if (ActivityCompat.shouldShowRequestPermissionRationale(EditorActivity.this,
                         Manifest.permission.READ_EXTERNAL_STORAGE)) {
                     Toast.makeText(EditorActivity.this, "Need permission to use pictures from Gallery!", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     ActivityCompat.requestPermissions(EditorActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE);
-                            pickImage();
                 }
             } else {
                 pickImage();
@@ -213,27 +213,22 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
-    private void pickImage() {
-        // open image gallery
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        String pictureDirectoryPath = pictureDirectory.getPath();
-        Uri data = Uri.parse(pictureDirectoryPath);
-        photoPickerIntent.setDataAndType(data, "image/*");
-        startActivityForResult(photoPickerIntent, PICK_PHOTO_REQUEST);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            pickImage();
+        switch (requestCode) {
+            case REQUEST_IMAGE_GET: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    pickImage();
+                }
+            }
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_PHOTO_REQUEST && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK) {
             if (data != null) {
                 Uri image = data.getData();
                 mImageUri = image.toString();
@@ -245,29 +240,52 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
+    //from http://stackoverflow.com/questions/18220152/opening-an-image-using-intent-action-pick
+    private void pickImage() {
+        // open image gallery
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String pictureDir = pictureDirectory.getPath();
+        Uri data = Uri.parse(pictureDir);
+        intent.setDataAndType(data, "image/*");
+        startActivityForResult(intent, REQUEST_IMAGE_GET);
+    }
+
+
     public void saveItem() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
-        String descriptionString = mQuantityEditText.getText().toString().trim();
+        String descriptionString = mDescriptionEditText.getText().toString().trim();
         String soldString = mSoldEditText.getText().toString().trim();
-        String supplierString = mSupplierEditText.getText().toString().trim();
+        supplierEmail = mSupplierEditText.getText().toString().trim();
         item = nameString;
-        if (mCurrentItemUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(descriptionString) && TextUtils.isEmpty(soldString)) {
+        //don't allow empty fields
+        if (TextUtils.isEmpty(nameString)
+                || TextUtils.isEmpty(priceString)
+                || TextUtils.isEmpty(quantityString)
+                || TextUtils.isEmpty(descriptionString)
+                || TextUtils.isEmpty(supplierEmail)
+                || TextUtils.isEmpty(soldString)) {
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        if (!isEmailValid(supplierEmail)) {
+            Toast.makeText(this, "Please provide valid email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int quantity = Integer.valueOf(quantityString);
+        float price = Float.valueOf(priceString);
+        int sold = Integer.valueOf(soldString);
         ContentValues values = new ContentValues();
         values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_NAME, nameString);
-        values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE, priceString);
-        values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY, quantityString);
+        values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_PRICE, price);
+        values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_QUANTITY, quantity);
         values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_DESCRIPTION, descriptionString);
-        values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD, soldString);
-        values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER, supplierString);
+        values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_SOLD, sold);
+        values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_SUPPLIER, supplierEmail);
         values.put(InventoryContract.InventoryEntry.COLUMN_ITEM_IMAGE, mImageUri);
 
 
@@ -276,13 +294,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             Uri newUri = getContentResolver().insert(InventoryContract.InventoryEntry.CONTENT_URI, values);
             // Show a toast message depending on whether or not the insertion was successful
             if (newUri != null) {
-                // If the new content URI is null, then there was an error with insertion.
                 Toast.makeText(this, R.string.item_saved,
                         Toast.LENGTH_SHORT).show();
+                finish();
             } else {
-                // Otherwise, the insertion was successful and we can display a toast.
                 Toast.makeText(this, R.string.error_saving,
                         Toast.LENGTH_SHORT).show();
+                finish();
             }
         } else {
             // Otherwise this is an existing item, so update item with content URI and pass in the new ContentValues.
@@ -294,13 +312,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 // If no rows were affected, then there was an error with the update.
                 Toast.makeText(this, getString(R.string.error_saving),
                         Toast.LENGTH_SHORT).show();
+                finish();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.item_saved),
                         Toast.LENGTH_SHORT).show();
+                finish();
             }
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -317,8 +338,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 saveItem();
-                finish();
-
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -449,9 +468,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int quantity = cursor.getInt(quantityColumnIndex);
             String description = cursor.getString(descriptionColumnIndex);
             int soldItems = cursor.getInt(soldColumnIndex);
-            String supplier = cursor.getString(supplierColumnIndex);
+            supplierEmail = cursor.getString(supplierColumnIndex);
             mImageUri = cursor.getString(imageColumnIndex);
-            supplierEmail = supplier + "@yahoo.com";
             item = name; //for mail
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
@@ -459,10 +477,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             mQuantityEditText.setText(String.valueOf(quantity));
             mDescriptionEditText.setText(description);
             mSoldEditText.setText(String.valueOf(soldItems));
-            mSupplierEditText.setText(supplier);
+            mSupplierEditText.setText(supplierEmail);
             //loading image with Picasso
             Picasso.with(this)
                     .load(mImageUri)
+                    .placeholder(R.drawable.ic_file_image)
                     .into(mImageView);
         }
     }
@@ -480,7 +499,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     public void orderMore() {
         //implicit intent for contacting supplier
         Intent intent = new Intent(Intent.ACTION_SENDTO);
-        String[] adress = {supplierEmail.replace(" ", "_")};
+        String[] adress = {supplierEmail};
         intent.setData(Uri.parse("mailto:")); // only email apps should handle this
         intent.putExtra(Intent.EXTRA_EMAIL, adress);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Order from Iva's Emporium");

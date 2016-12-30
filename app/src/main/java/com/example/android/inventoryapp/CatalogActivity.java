@@ -36,10 +36,11 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 startActivity(intent);
             }
         });
+        //setup empty view
         ListView itemsListView = (ListView) findViewById(R.id.list_view);
         View emptyView = findViewById(R.id.empty_view);
         itemsListView.setEmptyView(emptyView);
-        // Setup cursor adapter using cursor from last step
+        // Setup cursor adapter
         mAdapter = new InventoryCursorAdapter(this, null);
         // Attach cursor adapter to the ListView
         itemsListView.setAdapter(mAdapter);
@@ -49,12 +50,12 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
                 intent.setData(ContentUris.withAppendedId(InventoryContract.InventoryEntry.CONTENT_URI, id));
                 startActivity(intent);
-        }
-    });
+            }
+        });
         getLoaderManager().initLoader(0, null, this);
     }
 
-
+    //menu setup
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_catalog.xml file.
@@ -102,16 +103,13 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private void deleteItems() {
-        int rowsDeleted = getContentResolver().delete(InventoryContract.InventoryEntry.CONTENT_URI, null, null);
+        getContentResolver().delete(InventoryContract.InventoryEntry.CONTENT_URI, null, null);
     }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        // This is called when a new Loader needs to be created.  This
-        // sample only has one Loader, so we don't care about the ID.
-        // First, pick the base URI to use depending on whether we are
-        // currently filtering.
+        // This is called when a new Loader needs to be created.
         Uri baseUri;
         baseUri = InventoryContract.InventoryEntry.CONTENT_URI;
         String[] projection = {

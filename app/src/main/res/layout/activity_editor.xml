@@ -2,19 +2,19 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_margin">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/activity_margin"
         tools:context=".EditorActivity">
 
-        <!-- Overview category -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:baselineAligned="false"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -22,6 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:orientation="vertical">
+
                 <!-- Label -->
                 <TextView
                     style="@style/CategoryStyle"
@@ -29,19 +30,16 @@
 
                 <ImageView
                     android:id="@+id/item_image"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    style="@style/EditorImage"
                     android:contentDescription="@string/item_image"
-                    android:padding="8dp"
                     android:src="@drawable/ic_file_image" />
             </LinearLayout>
-            <!-- Input fields -->
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:orientation="vertical"
-                android:paddingLeft="4dp">
+                android:layout_weight="2"
+                android:orientation="vertical">
 
                 <!-- Name field -->
                 <EditText
@@ -50,63 +48,58 @@
                     android:hint="@string/name"
                     android:inputType="textCapWords" />
 
-                <!-- Breed field -->
+                <!-- Price field -->
                 <EditText
                     android:id="@+id/edit_item_price"
                     style="@style/EditorFieldStyle"
                     android:hint="@string/price_per_item"
                     android:inputType="numberDecimal" />
-
+                <!-- Quantity field -->
                 <EditText
                     android:id="@+id/edit_item_quantity"
                     style="@style/EditorFieldStyle"
                     android:hint="@string/current_quantity"
                     android:inputType="number" />
-
+                <!-- Items sold field -->
                 <EditText
                     android:id="@+id/edit_item_sold"
                     style="@style/EditorFieldStyle"
                     android:hint="@string/number_of_sold_items"
                     android:inputType="number" />
-
+                <!-- Description field -->
                 <EditText
                     android:id="@+id/edit_item_description"
                     style="@style/EditorFieldStyle"
                     android:hint="@string/description"
                     android:inputType="textCapSentences" />
-
+                <!-- Supplier field -->
                 <EditText
                     android:id="@+id/edit_item_supplier"
                     style="@style/EditorFieldStyle"
                     android:hint="@string/supplier"
-                    android:inputType="textCapWords" />
+                    android:inputType="textEmailAddress" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="24dp"
             android:orientation="vertical">
 
             <Button
                 android:id="@+id/sell_button"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
+                style="@style/EditorButtons"
                 android:text="@string/sell" />
 
             <Button
                 android:id="@+id/recieved_button"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
+                style="@style/EditorButtons"
                 android:text="@string/recieved" />
 
             <Button
                 android:id="@+id/order_button"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
+                style="@style/EditorButtons"
                 android:text="@string/order" />
         </LinearLayout>
     </LinearLayout>

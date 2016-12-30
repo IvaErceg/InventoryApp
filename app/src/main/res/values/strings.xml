@@ -27,7 +27,7 @@
     <string name="current_quantity">Current quantity</string>
     <string name="number_of_sold_items">Number of sold items</string>
     <string name="description">Description</string>
-    <string name="supplier">Supplier</string>
+    <string name="supplier">Supplier email</string>
     <string name="sell">sell</string>
     <string name="recieved">received</string>
     <string name="order">order</string>
@@ -42,6 +42,7 @@
     <string name="in_stock">" in stock"</string>
     <string name="out_of_stock">Sorry, we are out!</string>
     <string name="sold">"Sold "</string>
+    <string name="filler_image">filler image</string>
 
 
 </resources>
